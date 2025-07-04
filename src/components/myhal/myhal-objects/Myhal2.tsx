@@ -1,10 +1,33 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { useLoader } from "@react-three/fiber";
 import { ThreeElements } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import { Mesh } from "three";
 
 const loader = new GLTFLoader();
 
-export default function Myhal2(props: ThreeElements['group']) {
+type Myhal2Props = ThreeElements['group'] & { opacity?: number };
+
+export default function Myhal2(props: Myhal2Props) {
+    const { opacity = 1, ...groupProps } = props;
     const gltf = useLoader(loader, "/models/myhal1.glb");
-    return <group {...props}><primitive object={gltf.scene} scale={100} /></group>;
+    const originalOpacities = useRef<Map<Mesh, number>>(new Map());
+    
+    useEffect(() => {
+        gltf.scene.traverse((child) => {
+            if (child instanceof Mesh && child.material) {
+                if (!originalOpacities.current.has(child)) {
+                    originalOpacities.current.set(child, child.material.opacity);
+                }
+                
+                const originalOpacity = originalOpacities.current.get(child) || 1;
+                const newOpacity = originalOpacity * opacity;
+                
+                child.material.transparent = newOpacity < 1;
+                child.material.opacity = newOpacity;
+            }
+        });
+    }, [gltf, opacity]);
+    
+    return <group {...groupProps}><primitive object={gltf.scene} scale={100} /></group>;
 }
