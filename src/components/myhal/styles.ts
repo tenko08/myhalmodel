@@ -4,7 +4,7 @@ const sceneStyles = {
   };
   
   const canvasStyles = {
-    background: '#000',
+    background: '#fff',
     width: '100vw',
     height: '100vh',
   };

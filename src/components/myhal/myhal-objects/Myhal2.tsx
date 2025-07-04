@@ -4,7 +4,7 @@ import { ThreeElements } from "@react-three/fiber";
 
 const loader = new GLTFLoader();
 
-export default function Myhal1(props: ThreeElements['group']) {
+export default function Myhal2(props: ThreeElements['group']) {
     const gltf = useLoader(loader, "/models/myhal1.glb");
     return <group {...props}><primitive object={gltf.scene} scale={100} /></group>;
 }
