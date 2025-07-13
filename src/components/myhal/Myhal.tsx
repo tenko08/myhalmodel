@@ -4,7 +4,8 @@ import Myhal2 from "./myhal-objects/Myhal2";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles, Position } from "./styles";
 import { useState, useRef } from "react";
-import { Camera } from "three";
+import { Camera, Vector3 } from "three";
+import * as THREE from "three";
 
 interface FloorPositions {
   myhal1: Position;
@@ -17,54 +18,80 @@ interface Opacity {
 }
 
 export default function Myhal() {
-  const [cameraPosition, setCameraPosition] = useState<Position>([300, 300, 300]);
-  const [floorPositions, setFloorPositions] = useState<FloorPositions>({
+  const [defaultCameraPosition, setDefaultCameraPosition] = useState<Vector3>(new THREE.Vector3(400, 200, 400));
+  const [defaultCameraLookAt, setDefaultCameraLookAt] = useState<Vector3>(new THREE.Vector3(0, 0, 0));
+  const [defaultFloorPositions, setDefaultFloorPositions] = useState<FloorPositions>({
     myhal1: [0, 0, 0],
     myhal2: [0, 100, 0]
   });
-  const [floorOpacity, setFloorOpacity] = useState<Opacity>({
+  const [defaultFloorOpacity, setDefaultFloorOpacity] = useState<Opacity>({
     myhal1: 1,
     myhal2: 1
   });
   const cameraRef = useRef<Camera>(null);
 
-  const updatePosition = (key: keyof FloorPositions, newPosition: Position) => {
-    setFloorPositions(prev => ({
-      ...prev,
-      [key]: newPosition
-    }));
-  };
+  const animateCamera = (targetPosition: Vector3, targetLookAt: Vector3, duration: number) => {
+    if (cameraRef.current) {
+      const camera = cameraRef.current;
+      const startTime = Date.now();
+      const startPosition = camera.position.clone();
+      
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      const startLookAt = startPosition.clone().add(forward.clone().multiplyScalar(100));
 
-  const updateOpacity = (key: keyof Opacity, newOpacity: number) => {
-    setFloorOpacity(prev => ({
-      ...prev,
-      [key]: newOpacity
-    }));
+      const currentPosition = new THREE.Vector3();
+      const currentLookAt = new THREE.Vector3();
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        
+        currentPosition.lerpVectors(startPosition, targetPosition, easeProgress);
+        camera.position.copy(currentPosition);
+        
+        currentLookAt.lerpVectors(startLookAt, targetLookAt, easeProgress);
+        camera.lookAt(currentLookAt);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }
   };
 
   const resetCamera = () => {
-    if (cameraRef.current) {
-      cameraRef.current.position.set(300, 300, 300);
-      cameraRef.current.lookAt(0, 0, 0);
-    }
+    animateCamera(defaultCameraPosition, defaultCameraLookAt, 1000);
+  };
+
+  const focusFloor1 = () => {
+    animateCamera(new THREE.Vector3(300, 300, 300), new THREE.Vector3(0, 0, 0), 1000);
   };
 
   return (
     <div className="w-full h-full">
       <div className="flex justify-center items-center">
-        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={resetCamera}>Reset Camera</h1>
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={resetCamera}>
+          Reset Camera
+        </h1>
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={focusFloor1}>
+          Focus Floor 1
+        </h1>
       </div>
       <Canvas 
           shadows
           style={canvasStyles}
-          camera={{ position: cameraPosition }}
+          camera={{ position: defaultCameraPosition }}
           onCreated={({ camera }) => {
             cameraRef.current = camera;
           }}
       >
           <ambientLight intensity={1} />
-          <Myhal1 position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          <Myhal2 position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
+          <Myhal1 position={defaultFloorPositions.myhal1} opacity={defaultFloorOpacity.myhal1} />
+          <Myhal2 position={defaultFloorPositions.myhal2} opacity={defaultFloorOpacity.myhal2} />
           <OrbitControls />
       </Canvas>
     </div>
