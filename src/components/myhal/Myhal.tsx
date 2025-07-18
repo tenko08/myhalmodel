@@ -18,15 +18,15 @@ interface Opacity {
 }
 
 export default function Myhal() {
-  const [defaultCameraPosition, setDefaultCameraPosition] = useState<Vector3>(new THREE.Vector3(400, 200, 400));
-  const [defaultFloorPositions, setDefaultFloorPositions] = useState<FloorPositions>({
-    myhal1: [0, 0, 0],
-    myhal2: [0, 100, 0]
-  });
-  const [defaultFloorOpacity, setDefaultFloorOpacity] = useState<Opacity>({
+  const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
+  const defaultFloorPositions = {
+    myhal1: new THREE.Vector3(0, 0, 0),
+    myhal2: new THREE.Vector3(0, 100, 0)
+  };
+  const defaultFloorOpacity = {
     myhal1: 1,
     myhal2: 1
-  });
+  };
   const cameraRef = useRef<Camera>(null);
 
   const animateCamera = (targetPosition: Vector3, targetLookAt: Vector3, duration: number) => {
