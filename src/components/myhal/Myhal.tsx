@@ -29,6 +29,7 @@ export default function Myhal() {
   };
   const cameraRef = useRef<Camera>(null);
 
+  // Moves camera to target position over duration
   const animateCamera = (targetPosition: Vector3, duration: number) => {
     if (cameraRef.current) {
       const camera = cameraRef.current;
@@ -53,6 +54,7 @@ export default function Myhal() {
     }
   };
 
+  // -- Camera Controls --
   const resetCamera = () => {
     animateCamera(defaultCameraPosition, 1000);
   };

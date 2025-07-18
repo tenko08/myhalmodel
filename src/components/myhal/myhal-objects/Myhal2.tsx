@@ -13,6 +13,8 @@ export default function Myhal2(props: Myhal2Props) {
     const gltf = useLoader(loader, "/models/myhal1.glb");
     const originalOpacities = useRef<Map<Mesh, number>>(new Map());
     
+    // -- Opacity control --
+    // we need this because theres already transparent objects in the model
     useEffect(() => {
         gltf.scene.traverse((child) => {
             if (child instanceof Mesh && child.material) {
@@ -28,6 +30,7 @@ export default function Myhal2(props: Myhal2Props) {
             }
         });
     }, [gltf, opacity]);
-    
+
+    // -- Render --
     return <group {...groupProps}><primitive object={gltf.scene} scale={100} /></group>;
 }
