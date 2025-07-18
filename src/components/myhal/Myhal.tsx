@@ -8,8 +8,8 @@ import { Camera, Vector3 } from "three";
 import * as THREE from "three";
 
 interface FloorPositions {
-  myhal1: Position;
-  myhal2: Position;
+  myhal1: THREE.Vector3;
+  myhal2: THREE.Vector3;
 }
 
 interface Opacity {
@@ -19,17 +19,17 @@ interface Opacity {
 
 export default function Myhal() {
   const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
-  const defaultFloorPositions = {
+  const defaultFloorPositions: FloorPositions = {
     myhal1: new THREE.Vector3(0, 0, 0),
     myhal2: new THREE.Vector3(0, 100, 0)
   };
-  const defaultFloorOpacity = {
+  const defaultFloorOpacity: Opacity = {
     myhal1: 1,
     myhal2: 1
   };
   const cameraRef = useRef<Camera>(null);
 
-  const animateCamera = (targetPosition: Vector3, targetLookAt: Vector3, duration: number) => {
+  const animateCamera = (targetPosition: Vector3, duration: number) => {
     if (cameraRef.current) {
       const camera = cameraRef.current;
       const startTime = Date.now();
@@ -54,11 +54,11 @@ export default function Myhal() {
   };
 
   const resetCamera = () => {
-    animateCamera(defaultCameraPosition, new THREE.Vector3(0, 0, 0), 1000);
+    animateCamera(defaultCameraPosition, 1000);
   };
 
   const focusFloor1 = () => {
-    animateCamera(new THREE.Vector3(300, 300, 300), new THREE.Vector3(0, 0, 0), 1000);
+    animateCamera(new THREE.Vector3(300, 300, 300), 1000);
   };
 
   return (
