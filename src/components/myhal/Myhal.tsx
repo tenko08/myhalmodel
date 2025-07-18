@@ -17,11 +17,6 @@ interface Opacity {
   myhal2: number;
 }
 
-interface FloorsRef {
-  myhal1: THREE.Group | null;
-  myhal2: THREE.Group | null;
-}
-
 export default function Myhal() {
   const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
   const defaultFloorPositions: FloorPositions = {
