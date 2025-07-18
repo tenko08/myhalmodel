@@ -119,7 +119,7 @@ export default function Myhal() {
             cameraRef.current = camera;
           }}
       >
-          <ambientLight intensity={1} />
+          <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
           <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
           {/* <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} /> */}
