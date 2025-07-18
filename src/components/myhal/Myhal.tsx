@@ -82,7 +82,7 @@ export default function Myhal() {
           <ambientLight intensity={1} />
           <Myhal1 position={defaultFloorPositions.myhal1} opacity={defaultFloorOpacity.myhal1} />
           <Myhal2 position={defaultFloorPositions.myhal2} opacity={defaultFloorOpacity.myhal2} />
-          <OrbitControls />
+          <OrbitControls maxDistance={800} minDistance={100} />
       </Canvas>
     </div>
   );
