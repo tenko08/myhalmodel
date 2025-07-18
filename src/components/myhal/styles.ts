@@ -9,7 +9,4 @@ const canvasStyles = {
   height: '100vh',
 };
 
-type Position = [number, number, number];
-
 export { sceneStyles, canvasStyles };
-export type { Position };

@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import Myhal1 from "./myhal-objects/Myhal1";
 import Myhal2 from "./myhal-objects/Myhal2";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
-import { canvasStyles, Position } from "./styles";
+import { canvasStyles } from "./styles";
 import { useState, useRef } from "react";
 import { Camera, Vector3 } from "three";
 import * as THREE from "three";
