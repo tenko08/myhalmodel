@@ -18,6 +18,9 @@ export default function Myhal2(props: Myhal2Props) {
     useEffect(() => {
         gltf.scene.traverse((child) => {
             if (child instanceof Mesh && child.material) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+
                 if (!originalOpacities.current.has(child)) {
                     originalOpacities.current.set(child, child.material.opacity);
                 }

@@ -6,6 +6,7 @@ import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
 import { Camera, Vector3 } from "three";
 import * as THREE from "three";
+import LightBulb from "./myhal-objects/Lightbulb";
 
 interface FloorPositions {
   myhal1: THREE.Vector3;
@@ -118,7 +119,8 @@ export default function Myhal() {
             cameraRef.current = camera;
           }}
       >
-          <ambientLight intensity={1} />
+          <ambientLight intensity={0.5} />
+          <LightBulb position={[400, 100, 400]} />
           <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
           <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} />
           <OrbitControls maxDistance={800} minDistance={100} />
