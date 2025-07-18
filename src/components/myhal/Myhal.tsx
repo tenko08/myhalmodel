@@ -120,7 +120,7 @@ export default function Myhal() {
           }}
       >
           <ambientLight intensity={1} />
-          <LightBulb position={[400, 150, 400]} />
+          <LightBulb position={[400, 180, 350]} />
           <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
           {/* <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} /> */}
           <OrbitControls maxDistance={800} minDistance={100} />
