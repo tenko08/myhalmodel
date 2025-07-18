@@ -119,10 +119,10 @@ export default function Myhal() {
             cameraRef.current = camera;
           }}
       >
-          <ambientLight intensity={0.5} />
-          <LightBulb position={[400, 100, 400]} />
+          <ambientLight intensity={1} />
+          <LightBulb position={[400, 150, 400]} />
           <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} />
+          {/* <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} /> */}
           <OrbitControls maxDistance={800} minDistance={100} />
       </Canvas>
     </div>

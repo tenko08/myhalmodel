@@ -6,7 +6,7 @@ function LightBulb(props: ThreeElements['mesh']) {
     <mesh {...props} >
       <pointLight 
         castShadow 
-        intensity={1500} 
+        intensity={200} 
         distance={5000}
         decay={1}
         color="white"
