@@ -19,7 +19,6 @@ interface Opacity {
 
 export default function Myhal() {
   const [defaultCameraPosition, setDefaultCameraPosition] = useState<Vector3>(new THREE.Vector3(400, 200, 400));
-  const [defaultCameraLookAt, setDefaultCameraLookAt] = useState<Vector3>(new THREE.Vector3(0, 0, 0));
   const [defaultFloorPositions, setDefaultFloorPositions] = useState<FloorPositions>({
     myhal1: [0, 0, 0],
     myhal2: [0, 100, 0]
@@ -35,13 +34,7 @@ export default function Myhal() {
       const camera = cameraRef.current;
       const startTime = Date.now();
       const startPosition = camera.position.clone();
-      
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-      const startLookAt = startPosition.clone().add(forward.clone().multiplyScalar(100));
-
       const currentPosition = new THREE.Vector3();
-      const currentLookAt = new THREE.Vector3();
 
       const animate = () => {
         const elapsed = Date.now() - startTime;
@@ -50,9 +43,6 @@ export default function Myhal() {
         
         currentPosition.lerpVectors(startPosition, targetPosition, easeProgress);
         camera.position.copy(currentPosition);
-        
-        currentLookAt.lerpVectors(startLookAt, targetLookAt, easeProgress);
-        camera.lookAt(currentLookAt);
         
         if (progress < 1) {
           requestAnimationFrame(animate);
@@ -64,7 +54,7 @@ export default function Myhal() {
   };
 
   const resetCamera = () => {
-    animateCamera(defaultCameraPosition, defaultCameraLookAt, 1000);
+    animateCamera(defaultCameraPosition, new THREE.Vector3(0, 0, 0), 1000);
   };
 
   const focusFloor1 = () => {
