@@ -1,7 +1,7 @@
 import React from "react";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, OrbitControlsProps } from "@react-three/drei";
 
-function Controls(props: any) {
+function Controls(props: OrbitControlsProps) {
   return <OrbitControls {...props} enableZoom={true} enablePan={false} />;
 }
 
