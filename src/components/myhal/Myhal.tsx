@@ -111,11 +111,11 @@ export default function Myhal() {
 
   const movementTest = () => {
     animatePosition(new THREE.Vector3(0, -100, 0), 1000, 'myhal1');
-    // animateOpacity(0, 1000, 'myhal1');
+    animateOpacity(0, 1000, 'myhal1');
   };
 
   const movementUntest = () => {
-    // animateOpacity(1, 1000, 'myhal1');
+    animateOpacity(1, 1000, 'myhal1');
     animatePosition(new THREE.Vector3(0, 0, 0), 1000, 'myhal1');
   };
 
