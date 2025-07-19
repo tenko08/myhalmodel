@@ -8,7 +8,7 @@ import { Camera, Vector3 } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 
-interface FloorPositions {
+interface Positions {
   myhal1: THREE.Vector3;
   myhal2: THREE.Vector3;
 }
@@ -20,10 +20,10 @@ interface Opacity {
 
 export default function Myhal() {
   const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
-  const defaultFloorPositions: FloorPositions = {
+  const [floorPositions, setFloorPositions] = useState<Positions>({
     myhal1: new THREE.Vector3(0, 0, 0),
     myhal2: new THREE.Vector3(0, 100, 0)
-  };
+  });
   const [floorOpacity, setFloorOpacity] = useState<Opacity>({
     myhal1: 1,
     myhal2: 1
@@ -78,6 +78,28 @@ export default function Myhal() {
     animate();
   };
 
+  // Animates the position of a floor over duration
+  const animatePosition = (targetPosition: Vector3, duration: number, floor: keyof Positions) => {
+    const startTime = Date.now();
+    const startPosition = floorPositions[floor];
+    const currentPosition = new THREE.Vector3();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+      currentPosition.lerpVectors(startPosition, targetPosition, easeProgress);
+      setFloorPositions(prev => ({ ...prev, [floor]: currentPosition }));
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+  };
+
   // -- Camera Controls --
   const resetCamera = () => {
     animateCamera(defaultCameraPosition, 1000);
@@ -87,12 +109,14 @@ export default function Myhal() {
     animateCamera(new THREE.Vector3(300, 300, 300), 1000);
   };
 
-  const opacityTest = () => {
-    animateOpacity(0, 1000, 'myhal1');
+  const movementTest = () => {
+    animatePosition(new THREE.Vector3(0, -100, 0), 1000, 'myhal1');
+    // animateOpacity(0, 1000, 'myhal1');
   };
 
-  const opacityUntest = () => {
-    animateOpacity(1, 1000, 'myhal1');
+  const movementUntest = () => {
+    // animateOpacity(1, 1000, 'myhal1');
+    animatePosition(new THREE.Vector3(0, 0, 0), 1000, 'myhal1');
   };
 
   return (
@@ -104,11 +128,11 @@ export default function Myhal() {
         <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={focusFloor1}>
           Focus Floor 1
         </h1>
-        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={opacityTest}>
-          Opacity Test
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={movementTest}>
+          Movement Test
         </h1>
-        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={opacityUntest}>
-          Opacity Untest
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={movementUntest}>
+          Movement Untest
         </h1>
       </div>
       <Canvas 
@@ -121,8 +145,8 @@ export default function Myhal() {
       >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} />
+          <Myhal1 ref={myhal1Ref} position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
+          <Myhal2 ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
           <OrbitControls maxDistance={800} minDistance={100} />
       </Canvas>
     </div>
