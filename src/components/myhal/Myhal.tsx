@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import Myhal1 from "./myhal-objects/Myhal1";
-// import Myhal2 from "./myhal-objects/Myhal2";
+import Myhal2 from "./myhal-objects/Myhal2";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
@@ -30,7 +30,7 @@ export default function Myhal() {
   });
   const cameraRef = useRef<Camera>(null);
   const myhal1Ref = useRef<THREE.Group>(null);
-  // const myhal2Ref = useRef<THREE.Group>(null);
+  const myhal2Ref = useRef<THREE.Group>(null);
 
   // Moves camera to target position over duration
   const animateCamera = (targetPosition: Vector3, duration: number) => {
@@ -122,7 +122,7 @@ export default function Myhal() {
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
           <Myhal1 ref={myhal1Ref} position={defaultFloorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          {/* <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} /> */}
+          <Myhal2 ref={myhal2Ref} position={defaultFloorPositions.myhal2} opacity={floorOpacity.myhal2} />
           <OrbitControls maxDistance={800} minDistance={100} />
       </Canvas>
     </div>
