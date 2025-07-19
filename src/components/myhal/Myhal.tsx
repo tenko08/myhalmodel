@@ -1,12 +1,11 @@
 import { Canvas } from "@react-three/fiber";
-import Myhal1 from "./myhal-objects/Myhal1";
-import Myhal2 from "./myhal-objects/Myhal2";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
 import { Camera, Vector3 } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
+import Floor from "./myhal-objects/Floor";
 
 interface Positions {
   myhal1: THREE.Vector3;
@@ -145,8 +144,9 @@ export default function Myhal() {
       >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Myhal1 ref={myhal1Ref} position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          <Myhal2 ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
+          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
+          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
+            {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} />
       </Canvas>
     </div>
