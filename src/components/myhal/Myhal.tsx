@@ -81,16 +81,16 @@ export default function Myhal() {
   // Animates the position of a floor over duration
   const animatePosition = (targetPosition: Vector3, duration: number, floor: keyof Positions) => {
     const startTime = Date.now();
-    const startPosition = floorPositions[floor];
-    const currentPosition = new THREE.Vector3();
+    const startPosition = floorPositions[floor].clone();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const easeProgress = 1 - Math.pow(1 - progress, 3);
 
-      currentPosition.lerpVectors(startPosition, targetPosition, easeProgress);
-      setFloorPositions(prev => ({ ...prev, [floor]: currentPosition }));
+      const newPosition = new THREE.Vector3();
+      newPosition.lerpVectors(startPosition, targetPosition, easeProgress);
+      setFloorPositions(prev => ({ ...prev, [floor]: newPosition }));
 
       if (progress < 1) {
         requestAnimationFrame(animate);
