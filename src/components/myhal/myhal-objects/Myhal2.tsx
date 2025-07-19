@@ -10,7 +10,7 @@ type Myhal2Props = ThreeElements['group'] & { opacity?: number };
 
 const Myhal2 = forwardRef<Group, Myhal2Props>((props, ref) => {
     const { opacity = 1, ...groupProps } = props;
-    const gltf = useLoader(loader, "/models/myhal2.glb");
+    const gltf = useLoader(loader, "/models/myhal1.glb");
     const originalOpacities = useRef<Map<Mesh, number>>(new Map());
     const originalTransparent = useRef<Map<Mesh, boolean>>(new Map());
     const originalDepthWrite = useRef<Map<Mesh, boolean>>(new Map());
