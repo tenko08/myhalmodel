@@ -41,7 +41,6 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
             if (!(child.material instanceof Material)) return;
             
             const originalOpacity = originalOpacities.current.get(child) || 1;
-            const wasTransparent = originalTransparent.current.get(child) || false;
             const newOpacity = originalOpacity * opacity;
             
             child.material.transparent = true;
