@@ -1,39 +1,60 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { useLoader } from "@react-three/fiber";
 import { ThreeElements } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
-import { Mesh } from "three";
+import { forwardRef, useEffect, useRef } from "react";
+import { Group, Mesh } from "three";
 
 const loader = new GLTFLoader();
 
 type Myhal2Props = ThreeElements['group'] & { opacity?: number };
 
-export default function Myhal2(props: Myhal2Props) {
+const Myhal2 = forwardRef<Group, Myhal2Props>((props, ref) => {
     const { opacity = 1, ...groupProps } = props;
     const gltf = useLoader(loader, "/models/myhal1.glb");
     const originalOpacities = useRef<Map<Mesh, number>>(new Map());
+    const originalTransparent = useRef<Map<Mesh, boolean>>(new Map());
+    const originalDepthWrite = useRef<Map<Mesh, boolean>>(new Map());
     
-    // -- Opacity control --
-    // we need this because theres already transparent objects in the model
     useEffect(() => {
         gltf.scene.traverse((child) => {
             if (child instanceof Mesh && child.material) {
                 child.castShadow = true;
                 child.receiveShadow = true;
-
+                
                 if (!originalOpacities.current.has(child)) {
                     originalOpacities.current.set(child, child.material.opacity);
+                    originalTransparent.current.set(child, child.material.transparent);
+                    originalDepthWrite.current.set(child, child.material.depthWrite);
                 }
                 
                 const originalOpacity = originalOpacities.current.get(child) || 1;
+                const wasTransparent = originalTransparent.current.get(child) || false;
+                const wasDepthWrite = originalDepthWrite.current.get(child) ?? true;
                 const newOpacity = originalOpacity * opacity;
+                    
+                child.material.transparent = wasTransparent || opacity < 1;
                 
-                child.material.transparent = newOpacity < 1;
+                if (wasTransparent) {
+                    child.material.depthWrite = wasDepthWrite;
+                } else if (opacity < 1) {
+                    child.material.depthWrite = opacity === 1;
+                } else {
+                    child.material.depthWrite = wasDepthWrite;
+                }
+                
+                if (wasTransparent) {
+                    child.renderOrder = 1;
+                }
+                
+                child.material.needsUpdate = true;
                 child.material.opacity = newOpacity;
             }
         });
     }, [gltf, opacity]);
+    
+    return <group ref={ref} {...groupProps}><primitive object={gltf.scene} scale={100} /></group>;
+});
 
-    // -- Render --
-    return <group {...groupProps}><primitive object={gltf.scene} scale={100} /></group>;
-}
+Myhal2.displayName = 'Myhal2';
+
+export default Myhal2;
