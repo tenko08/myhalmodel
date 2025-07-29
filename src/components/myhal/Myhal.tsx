@@ -134,21 +134,36 @@ export default function Myhal() {
           Movement Untest
         </h1>
       </div>
-      <Canvas 
+      <div
+        style={{
+          ...canvasStyles,
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+          WebkitTouchCallout: "none",
+          WebkitTapHighlightColor: "transparent",
+          pointerEvents: "auto",
+        }}
+        draggable={false}
+        onDragStart={e => e.preventDefault()}
+      >
+        <Canvas
           shadows
-          style={canvasStyles}
+          style={{ width: "100vw", height: "100vh", background: "#fff", pointerEvents: "auto" }}
           camera={{ position: defaultCameraPosition }}
           onCreated={({ camera }) => {
             cameraRef.current = camera;
           }}
-      >
+        >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
           <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
           <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
-            {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
+          {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} />
-      </Canvas>
+        </Canvas>
+      </div>
     </div>
   );
 }
