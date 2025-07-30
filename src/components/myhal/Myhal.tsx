@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
-import { Camera, Vector3 } from "three";
+import { Camera, Vector3, Group } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 import Floor from "./myhal-objects/Floor";
@@ -17,6 +17,11 @@ interface Opacity {
   myhal2: number;
 }
 
+interface FloorRef extends THREE.Group {
+  animateToPosition: (targetPosition: THREE.Vector3, duration: number, onComplete?: () => void) => void;
+  animateOpacity: (targetOpacity: number, duration: number) => void;
+}
+
 export default function Myhal() {
   const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
   const [floorPositions, setFloorPositions] = useState<Positions>({
@@ -27,9 +32,10 @@ export default function Myhal() {
     myhal1: 1,
     myhal2: 1
   });
+  
   const cameraRef = useRef<Camera>(null);
-  const myhal1Ref = useRef<THREE.Group>(null);
-  const myhal2Ref = useRef<THREE.Group>(null);
+  const myhal1Ref = useRef<FloorRef>(null);
+  const myhal2Ref = useRef<FloorRef>(null);
 
   // Moves camera to target position over duration
   const animateCamera = (targetPosition: Vector3, duration: number) => {
@@ -108,14 +114,24 @@ export default function Myhal() {
     animateCamera(new THREE.Vector3(300, 300, 300), 1000);
   };
 
+  // const movementTest = () => {
+  //   animatePosition(new THREE.Vector3(0, -100, 0), 1000, 'myhal1');
+  //   animateOpacity(0, 1000, 'myhal1');
+  // };
+
   const movementTest = () => {
-    animatePosition(new THREE.Vector3(0, -100, 0), 1000, 'myhal1');
-    animateOpacity(0, 1000, 'myhal1');
+    myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, -100, 0), 1000);
+    myhal1Ref.current?.animateOpacity(0, 1000);
   };
 
+  // const movementUntest = () => {
+  //   animateOpacity(1, 1000, 'myhal1');
+  //   animatePosition(new THREE.Vector3(0, 0, 0), 1000, 'myhal1');
+  // };
+
   const movementUntest = () => {
-    animateOpacity(1, 1000, 'myhal1');
-    animatePosition(new THREE.Vector3(0, 0, 0), 1000, 'myhal1');
+    myhal1Ref.current?.animateOpacity(1, 1000);
+    myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, 0, 0), 1000);
   };
 
   return (
