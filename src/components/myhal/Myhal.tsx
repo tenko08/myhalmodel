@@ -130,8 +130,8 @@ export default function Myhal() {
   // };
 
   const movementUntest = () => {
-    myhal1Ref.current?.animateOpacity(1, 1000);
     myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, 0, 0), 1000);
+    myhal1Ref.current?.animateOpacity(1, 1000);
   };
 
   return (

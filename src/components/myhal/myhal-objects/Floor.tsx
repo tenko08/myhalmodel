@@ -21,11 +21,15 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
     const originalDepthWrite = useRef<Map<Mesh, boolean>>(new Map());
     
     // animation function
-    const animateToPosition = (targetPosition: THREE.Vector3, duration: number = 1, onComplete?: () => void) => {
+    const animateToPosition = (targetPosition: THREE.Vector3, durationMs: number = 1000, onComplete?: () => void) => {
         const scene = gltf.scene;
         const currentPosition = scene.position.clone();
         
-        const times = [0, duration];
+        // Convert milliseconds to seconds for Three.js animation system
+        const duration = durationMs / 1000;
+        
+        // Create keyframe track with normalized time (0 to 1)
+        const times = [0, 1];
         const values = [...currentPosition.toArray(), ...targetPosition.toArray()];
         const positionTrack = new THREE.VectorKeyframeTrack(
             '.position',
@@ -35,7 +39,10 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
 
         const clip = new THREE.AnimationClip('move', duration, [positionTrack]);
         
-        animationActions.current.forEach(action => action.stop());
+        animationActions.current.forEach(action => {
+            action.stop();
+            mixer.current.uncacheAction(clip, scene);
+        });
         animationActions.current = [];
         
         const action = mixer.current.clipAction(clip);
@@ -44,15 +51,13 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
         
         // Add completion callback
         if (onComplete) {
-            action.getClip().duration = duration;
-            const checkComplete = () => {
-                if (action.time >= duration) {
+            const onFinish = (e: any) => {
+                if (e.action === action) {
                     onComplete();
-                } else {
-                    requestAnimationFrame(checkComplete);
+                    mixer.current.removeEventListener('finished', onFinish);
                 }
             };
-            checkComplete();
+            mixer.current.addEventListener('finished', onFinish);
         }
         
         action.play();
@@ -60,7 +65,9 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
     };
 
     // opacity animation function
-    const animateOpacity = (targetOpacity: number, duration: number = 1) => {
+    const animateOpacity = (targetOpacity: number, durationMs: number = 1000) => {
+        // Convert milliseconds to seconds for Three.js animation system
+        const duration = durationMs / 1000;
         const meshes: Mesh[] = [];
         gltf.scene.traverse((child) => {
             if (child instanceof Mesh && child.material) {
@@ -69,37 +76,58 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
         });
 
         meshes.forEach((mesh) => {
-            if (!(mesh.material instanceof Material)) return;
-            const originalOpacity = originalOpacities.current.get(mesh) || 1;
-            const currentOpacity = mesh.material.opacity;
-            const targetValue = originalOpacity * targetOpacity;
+            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            
+            materials.forEach((material, index) => {
+                if (!(material instanceof Material)) return;
+                
+                const originalOpacity = originalOpacities.current.get(mesh) || 1;
+                const currentOpacity = material.opacity;
+                const targetValue = originalOpacity * targetOpacity;
 
-            const times = [0, duration];
-            const values = [currentOpacity, targetValue];
-            const opacityTrack = new THREE.NumberKeyframeTrack(
-                `${mesh.uuid}.material.opacity`,
-                times,
-                values
-            );
+                const times = [0, duration];
+                const values = [currentOpacity, targetValue];
+                
+                // Create unique track name for each material
+                const trackName = Array.isArray(mesh.material) 
+                    ? `${mesh.uuid}.material[${index}].opacity`
+                    : `${mesh.uuid}.material.opacity`;
+                
+                const opacityTrack = new THREE.NumberKeyframeTrack(
+                    trackName,
+                    times,
+                    values
+                );
 
-            const clip = new THREE.AnimationClip(`fade-${mesh.uuid}`, duration, [opacityTrack]);
-            const action = mixer.current.clipAction(clip);
-            action.setLoop(THREE.LoopOnce, 1);
-            action.clampWhenFinished = true;
-            action.play();
-            animationActions.current.push(action);
+                const clip = new THREE.AnimationClip(`fade-${mesh.uuid}-${index}`, duration, [opacityTrack]);
+                const action = mixer.current.clipAction(clip);
+                action.setLoop(THREE.LoopOnce, 1);
+                action.clampWhenFinished = true;
+                action.play();
+                animationActions.current.push(action);
+            });
         });
     };
 
     // update mixer in animation frame
     useEffect(() => {
         let frameId: number;
-        const animate = (delta: number) => {
-            mixer.current.update(delta);
+        let lastTime = 0;
+        
+        const animate = (currentTime: number) => {
+            if (lastTime === 0) lastTime = currentTime;
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            
+            mixer.current.update(deltaTime);
             frameId = requestAnimationFrame(animate);
         };
+        
         frameId = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(frameId);
+        return () => {
+            cancelAnimationFrame(frameId);
+            lastTime = 0;
+        };
     }, []);
 
     // expose animation methods through ref
@@ -124,12 +152,21 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
                 child.castShadow = true;
                 child.receiveShadow = true;
                 
-                if (!originalOpacities.current.has(child)) {
-                    if (child.material instanceof Material) {
-                        originalOpacities.current.set(child, child.material.opacity || 1);
-                        originalDepthWrite.current.set(child, child.material.depthWrite ?? true);
+                // Handle both single materials and material arrays
+                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                
+                materials.forEach(material => {
+                    if (material instanceof Material) {
+                        // Enable transparency for all materials
+                        material.transparent = true;
+                        
+                        // Store original values if not already stored
+                        if (!originalOpacities.current.has(child)) {
+                            originalOpacities.current.set(child, material.opacity || 1);
+                            originalDepthWrite.current.set(child, material.depthWrite ?? true);
+                        }
                     }
-                }
+                });
             }
         });
 
