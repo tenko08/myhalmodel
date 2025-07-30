@@ -66,12 +66,21 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
 
     // opacity animation function
     const animateOpacity = (targetOpacity: number, durationMs: number = 1000) => {
-        // Convert milliseconds to seconds for Three.js animation system
         const duration = durationMs / 1000;
         const meshes: Mesh[] = [];
+        
         gltf.scene.traverse((child) => {
             if (child instanceof Mesh && child.material) {
                 meshes.push(child);
+                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                
+                materials.forEach(material => {
+                    if (material instanceof Material) {
+                        const originalOpacity = originalOpacities.current.get(child) || 1;
+                        // Material should be transparent if it was originally transparent or if we're fading out
+                        material.transparent = originalOpacity < 1 || targetOpacity < 1;
+                    }
+                });
             }
         });
 
@@ -83,7 +92,7 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
                 
                 const originalOpacity = originalOpacities.current.get(mesh) || 1;
                 const currentOpacity = material.opacity;
-                const targetValue = originalOpacity * targetOpacity;
+                const targetValue = targetOpacity === 1 ? originalOpacity : originalOpacity * targetOpacity;
 
                 const times = [0, duration];
                 const values = [currentOpacity, targetValue];
@@ -152,18 +161,14 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
                 child.castShadow = true;
                 child.receiveShadow = true;
                 
-                // Handle both single materials and material arrays
                 const materials = Array.isArray(child.material) ? child.material : [child.material];
                 
                 materials.forEach(material => {
                     if (material instanceof Material) {
-                        // Enable transparency for all materials
-                        material.transparent = true;
-                        
-                        // Store original values if not already stored
                         if (!originalOpacities.current.has(child)) {
-                            originalOpacities.current.set(child, material.opacity || 1);
-                            originalDepthWrite.current.set(child, material.depthWrite ?? true);
+                            const originalOpacity = material.opacity ?? 1;
+                            originalOpacities.current.set(child, originalOpacity);
+                            material.transparent = originalOpacity < 1;
                         }
                     }
                 });
