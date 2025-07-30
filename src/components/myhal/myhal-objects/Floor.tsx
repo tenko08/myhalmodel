@@ -13,7 +13,6 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
     const { opacity = 1, modelPath, ...groupProps } = props;
     const gltf = useLoader(GLTFLoader, modelPath);
     const originalOpacities = useRef<Map<Mesh, number>>(new Map());
-    const originalTransparent = useRef<Map<Mesh, boolean>>(new Map());
     const originalDepthWrite = useRef<Map<Mesh, boolean>>(new Map());
     
     useEffect(() => {
@@ -28,7 +27,6 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
                 if (!originalOpacities.current.has(child)) {
                     if (child.material instanceof Material) {
                         originalOpacities.current.set(child, child.material.opacity || 1);
-                        originalTransparent.current.set(child, child.material.transparent || false);
                         originalDepthWrite.current.set(child, child.material.depthWrite ?? true);
                     }
                 }
