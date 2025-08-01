@@ -1,5 +1,5 @@
 import { Mesh, Material, Vector3, AnimationMixer, VectorKeyframeTrack, AnimationClip, LoopOnce, AnimationAction } from 'three';
-import { useRef, useEffect, forwardRef } from 'react';
+import { useRef, useEffect, forwardRef, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ThreeElements } from '@react-three/fiber';
 
@@ -14,7 +14,7 @@ interface OpacityBoxRef extends Mesh {
   animateToPosition: (targetPosition: Vector3, duration: number, onComplete?: () => void) => void;
 }
 
-export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
+const OpacityBox = forwardRef<OpacityBoxRef, OpacityBoxProps>(({
   position = [0, 0, 0],
   size = [1, 1, 1],
   opacity = 0,
@@ -47,7 +47,7 @@ export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
   });
 
   // Position animation function
-  const animateToPosition = (targetPosition: Vector3, durationMs: number = 1000, onComplete?: () => void) => {
+  const animateToPosition = useCallback((targetPosition: Vector3, durationMs: number = 1000, onComplete?: () => void) => {
     if (!meshRef.current) return;
 
     const duration = durationMs / 1000;
@@ -82,7 +82,7 @@ export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
     action.clampWhenFinished = true;
 
     if (onComplete) {
-      const onFinish = (e: any) => {
+      const onFinish = (e: { action: AnimationAction }) => {
         if (e.action === action) {
           onComplete();
           mixer.current.removeEventListener('finished', onFinish);
@@ -94,7 +94,7 @@ export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
     action.fadeIn(0.1);
     action.play();
     animationActions.current.push(action);
-  };
+  }, []);
 
   // Expose animation method through ref
   useEffect(() => {
@@ -105,13 +105,13 @@ export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
     
     // Expose methods via ref
     if (ref) {
-      const refCurrent = ref as any;
+      const refCurrent = ref as unknown as React.RefObject<{ animateToPosition: (targetPosition: Vector3, duration: number) => void }>;
       refCurrent.current = {
         ...meshRef.current,
         animateToPosition,
       };
     }
-  }, [ref]);
+  }, [ref, animateToPosition]);
 
   return (
     <mesh 
@@ -129,3 +129,7 @@ export default forwardRef<OpacityBoxRef, OpacityBoxProps>(({
     </mesh>
   );
 });
+
+OpacityBox.displayName = 'OpacityBox';
+
+export default OpacityBox;

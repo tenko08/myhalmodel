@@ -7,11 +7,10 @@ import * as THREE from "three";
 
 type FloorProps = ThreeElements['group'] & { 
     modelPath: string;
-    onAnimationComplete?: () => void;
 };
 
 const Floor = forwardRef<Group, FloorProps>((props, ref) => {
-    const { modelPath, onAnimationComplete, ...groupProps } = props;
+    const { modelPath, ...groupProps } = props;
     const gltf = useLoader(GLTFLoader, modelPath);
     const mixer = useRef(new THREE.AnimationMixer(gltf.scene));
     const animationActions = useRef<THREE.AnimationAction[]>([]);
@@ -51,7 +50,7 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
         action.clampWhenFinished = true;
         
         if (onComplete) {
-            const onFinish = (e: any) => {
+            const onFinish = (e: { action: THREE.AnimationAction }) => {
                 if (e.action === action) {
                     onComplete();
                     mixer.current.removeEventListener('finished', onFinish);
@@ -89,7 +88,7 @@ const Floor = forwardRef<Group, FloorProps>((props, ref) => {
     // expose animation methods through ref
     useEffect(() => {
         if (ref) {
-            const refCurrent = ref as any;
+            const refCurrent = ref as unknown as React.RefObject<{ animateToPosition: (targetPosition: THREE.Vector3, duration: number) => void }>;
             refCurrent.current = {
                 ...refCurrent.current,
                 animateToPosition,

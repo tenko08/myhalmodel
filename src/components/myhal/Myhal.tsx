@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
-import { Camera, Vector3, Group } from "three";
+import { Camera, Vector3 } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 import Floor from "./myhal-objects/Floor";
@@ -25,10 +25,10 @@ interface FloorRef extends THREE.Group {
 
 export default function Myhal() {
   const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
-  const [floorPositions, setFloorPositions] = useState<Positions>({
+  const defaultFloorPositions: Positions = {
     myhal1: new THREE.Vector3(0, 0, 0),
     myhal2: new THREE.Vector3(0, 100, 0)
-  });
+  };
   const [floorOpacity, setFloorOpacity] = useState<Opacity>({
     myhal1: 0,
     myhal2: 0
@@ -133,14 +133,14 @@ export default function Myhal() {
         >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} />
+          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={defaultFloorPositions.myhal1} />
           <OpacityBox 
             position={[0, 20, 0]} 
             size={[500, 100, 500]} 
             opacity={floorOpacity.myhal1}
             ref={opacityBox1Ref} 
           />
-          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} />
+          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} minPolarAngle={0} maxPolarAngle={Math.PI / 3} />
           {/* change to orthographic camera? */}
