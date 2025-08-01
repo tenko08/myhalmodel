@@ -125,6 +125,7 @@ export default function Myhal() {
           <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} />
+          {/* change to orthographic camera? */}
         </Canvas>
       </div>
     </div>
