@@ -6,6 +6,7 @@ import { Camera, Vector3, Group } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 import Floor from "./myhal-objects/Floor";
+import OpacityBox from "./myhal-objects/OpacityBox";
 
 interface Positions {
   myhal1: THREE.Vector3;
@@ -29,13 +30,14 @@ export default function Myhal() {
     myhal2: new THREE.Vector3(0, 100, 0)
   });
   const [floorOpacity, setFloorOpacity] = useState<Opacity>({
-    myhal1: 1,
-    myhal2: 1
+    myhal1: 0,
+    myhal2: 0
   });
   
   const cameraRef = useRef<Camera>(null);
   const myhal1Ref = useRef<FloorRef>(null);
   const myhal2Ref = useRef<FloorRef>(null);
+  const opacityBox1Ref = useRef<THREE.Mesh & { animateToPosition: (targetPosition: THREE.Vector3, duration: number) => void }>(null);
 
   // Moves camera to target position over duration
   const animateCamera = (targetPosition: Vector3, duration: number) => {
@@ -71,12 +73,24 @@ export default function Myhal() {
     animateCamera(new THREE.Vector3(300, 300, 300), 1000);
   };
 
+  // -- Floor Controls --
+  const setFloor1Opacity = (value: number) => {
+    setFloorOpacity(prev => ({
+      ...prev,
+      myhal1: value
+    }));
+  };
+
   const movementTest = () => {
     myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, -100, 0), 1000);
+    opacityBox1Ref.current?.animateToPosition(new THREE.Vector3(0, -80, 0), 1000);
+    setFloor1Opacity(1);
   };
 
   const movementUntest = () => {
     myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, 0, 0), 1000);
+    opacityBox1Ref.current?.animateToPosition(new THREE.Vector3(0, 20, 0), 1000);
+    setFloor1Opacity(0);
   };
 
   return (
@@ -120,6 +134,12 @@ export default function Myhal() {
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
           <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} />
+          <OpacityBox 
+            position={[0, 20, 0]} 
+            size={[500, 100, 500]} 
+            opacity={floorOpacity.myhal1}
+            ref={opacityBox1Ref} 
+          />
           <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} />
