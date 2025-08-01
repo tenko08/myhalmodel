@@ -73,12 +73,10 @@ export default function Myhal() {
 
   const movementTest = () => {
     myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, -100, 0), 1000);
-    myhal1Ref.current?.animateOpacity(0, 1000);
   };
 
   const movementUntest = () => {
     myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, 0, 0), 1000);
-    myhal1Ref.current?.animateOpacity(1, 1000);
   };
 
   return (
@@ -121,8 +119,8 @@ export default function Myhal() {
         >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} opacity={floorOpacity.myhal1} />
-          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} opacity={floorOpacity.myhal2} />
+          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={floorPositions.myhal1} />
+          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={floorPositions.myhal2} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} />
           {/* change to orthographic camera? */}
