@@ -7,6 +7,7 @@ import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 import Floor from "./myhal-objects/Floor";
 import OpacityBox from "./myhal-objects/OpacityBox";
+import LocationPing from "./myhal-objects/LocationPing";
 import { 
   defaultFloorPositions, 
   defaultCameraPosition, 
@@ -16,7 +17,6 @@ import {
   opacityBoxConfigs,
   locationPingConfigs
 } from "./config";
-import LocationPing from "./myhal-objects/LocationPing";
 
 interface Opacity {
   myhal1: number;
@@ -29,6 +29,11 @@ interface FloorRef extends THREE.Group {
   animateOpacity: (targetOpacity: number, duration: number) => void;
 }
 
+interface LocationPingRef extends THREE.Mesh {
+  startPulsing: () => void;
+  stopPulsing: () => void;
+}
+
 export default function Myhal() {
   const [floorOpacity, setFloorOpacity] = useState<Opacity>({ // 0 is opaque, 1 is transparent (opposite of what it usually is)
     myhal1: 0,
@@ -38,9 +43,10 @@ export default function Myhal() {
   
   const cameraRef = useRef<Camera>(null);
   const myhal1Ref = useRef<FloorRef>(null);
+  const opacityBox1Ref = useRef<THREE.Mesh & { animateToPosition: (targetPosition: THREE.Vector3, duration: number) => void }>(null);
   const myhal2Ref = useRef<FloorRef>(null);
   const myhal150Ref = useRef<FloorRef>(null);
-  const opacityBox1Ref = useRef<THREE.Mesh & { animateToPosition: (targetPosition: THREE.Vector3, duration: number) => void }>(null);
+  const locationPingRef = useRef<LocationPingRef>(null);
 
   // Moves camera to target position over duration
   const animateCamera = (targetPosition: THREE.Vector3, duration: number) => {
@@ -143,7 +149,7 @@ export default function Myhal() {
             opacity={floorOpacity.myhal1}
             ref={opacityBox1Ref} 
           />
-          <LocationPing position={locationPingConfigs.defaultPosition.toArray()} />
+          <LocationPing position={locationPingConfigs.defaultPosition.toArray()} ref={locationPingRef} />
           {/* <Floor modelPath="/models/myhalF2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} /> */}
           {/* <Floor modelPath="/models/myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} /> */}
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
