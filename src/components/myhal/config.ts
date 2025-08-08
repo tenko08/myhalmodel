@@ -33,4 +33,12 @@ export const opacityBoxConfigs = {
   }
 };
 
+export const pingLocationConfigs = {
+  size: [500, 100, 500] as [number, number, number],
+  defaultPosition: new THREE.Vector3(0, 0, 0),
+  myhal1: {
+    frontDesk: new THREE.Vector3(0, 0, 0),
+  }
+};
+
 export const floorMovementAnimationDuration = 1000; // milliseconds 

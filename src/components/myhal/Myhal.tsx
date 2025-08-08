@@ -13,8 +13,10 @@ import {
   cameraPositions,
   floorMovementAnimationDuration,
   type FloorPositions,
-  opacityBoxConfigs
+  opacityBoxConfigs,
+  pingLocationConfigs
 } from "./config";
+import PingLocation from "./myhal-objects/PingLocation";
 
 interface Opacity {
   myhal1: number;
@@ -28,7 +30,7 @@ interface FloorRef extends THREE.Group {
 }
 
 export default function Myhal() {
-  const [floorOpacity, setFloorOpacity] = useState<Opacity>({
+  const [floorOpacity, setFloorOpacity] = useState<Opacity>({ // 0 is opaque, 1 is transparent (opposite of what it usually is)
     myhal1: 0,
     myhal2: 0,
     myhal150: 0
@@ -141,6 +143,7 @@ export default function Myhal() {
             opacity={floorOpacity.myhal1}
             ref={opacityBox1Ref} 
           />
+          <PingLocation position={pingLocationConfigs.defaultPosition.toArray()} />
           {/* <Floor modelPath="/models/myhalF2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} /> */}
           <Floor modelPath="/models/myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
