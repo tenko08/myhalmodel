@@ -14,7 +14,7 @@ import {
   floorMovementAnimationDuration,
   type FloorPositions,
   opacityBoxConfigs
-} from "./config/positions";
+} from "./config";
 
 interface Opacity {
   myhal1: number;
