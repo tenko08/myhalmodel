@@ -2,20 +2,24 @@ import { Canvas } from "@react-three/fiber";
 import OrbitControls from "@/components/orbit-controls/OrbitControls";
 import { canvasStyles } from "./styles";
 import { useRef, useState } from "react";
-import { Camera, Vector3 } from "three";
+import { Camera } from "three";
 import * as THREE from "three";
 import LightBulb from "./myhal-objects/Lightbulb";
 import Floor from "./myhal-objects/Floor";
 import OpacityBox from "./myhal-objects/OpacityBox";
-
-interface Positions {
-  myhal1: THREE.Vector3;
-  myhal2: THREE.Vector3;
-}
+import { 
+  defaultFloorPositions, 
+  defaultCameraPosition, 
+  cameraPositions,
+  floorMovementAnimationDuration,
+  type FloorPositions,
+  opacityBoxConfigs
+} from "./config/positions";
 
 interface Opacity {
   myhal1: number;
   myhal2: number;
+  myhal150: number;
 }
 
 interface FloorRef extends THREE.Group {
@@ -24,23 +28,20 @@ interface FloorRef extends THREE.Group {
 }
 
 export default function Myhal() {
-  const defaultCameraPosition = new THREE.Vector3(400, 200, 400);
-  const defaultFloorPositions: Positions = {
-    myhal1: new THREE.Vector3(0, 0, 0),
-    myhal2: new THREE.Vector3(0, 100, 0)
-  };
   const [floorOpacity, setFloorOpacity] = useState<Opacity>({
     myhal1: 0,
-    myhal2: 0
+    myhal2: 0,
+    myhal150: 0
   });
   
   const cameraRef = useRef<Camera>(null);
   const myhal1Ref = useRef<FloorRef>(null);
   const myhal2Ref = useRef<FloorRef>(null);
+  const myhal150Ref = useRef<FloorRef>(null);
   const opacityBox1Ref = useRef<THREE.Mesh & { animateToPosition: (targetPosition: THREE.Vector3, duration: number) => void }>(null);
 
   // Moves camera to target position over duration
-  const animateCamera = (targetPosition: Vector3, duration: number) => {
+  const animateCamera = (targetPosition: THREE.Vector3, duration: number) => {
     if (cameraRef.current) {
       const camera = cameraRef.current;
       const startTime = Date.now();
@@ -66,11 +67,11 @@ export default function Myhal() {
 
   // -- Camera Controls --
   const resetCamera = () => {
-    animateCamera(defaultCameraPosition, 1000);
+    animateCamera(cameraPositions.default, floorMovementAnimationDuration);
   };
 
   const focusFloor1 = () => {
-    animateCamera(new THREE.Vector3(300, 300, 300), 1000);
+    animateCamera(cameraPositions.floor1View, floorMovementAnimationDuration);
   };
 
   // -- Floor Controls --
@@ -82,14 +83,14 @@ export default function Myhal() {
   };
 
   const movementTest = () => {
-    myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, -100, 0), 1000);
-    opacityBox1Ref.current?.animateToPosition(new THREE.Vector3(0, -80, 0), 1000);
+    myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, -100, 0), floorMovementAnimationDuration);
+    opacityBox1Ref.current?.animateToPosition(opacityBoxConfigs.myhal1.animatedPosition, floorMovementAnimationDuration);
     setFloor1Opacity(1);
   };
 
   const movementUntest = () => {
-    myhal1Ref.current?.animateToPosition(new THREE.Vector3(0, 0, 0), 1000);
-    opacityBox1Ref.current?.animateToPosition(new THREE.Vector3(0, 20, 0), 1000);
+    myhal1Ref.current?.animateToPosition(defaultFloorPositions.myhal1, floorMovementAnimationDuration);
+    opacityBox1Ref.current?.animateToPosition(opacityBoxConfigs.myhal1.defaultPosition, floorMovementAnimationDuration);
     setFloor1Opacity(0);
   };
 
@@ -133,16 +134,19 @@ export default function Myhal() {
         >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Floor modelPath="/models/myhal1.glb" ref={myhal1Ref} position={defaultFloorPositions.myhal1} />
+          <Floor modelPath="/models/myhalF1.glb" ref={myhal1Ref} position={defaultFloorPositions.myhal1} />
           <OpacityBox 
-            position={[0, 20, 0]} 
-            size={[500, 100, 500]} 
+            position={opacityBoxConfigs.myhal1.defaultPosition.toArray()} 
+            size={opacityBoxConfigs.myhal1.size} 
             opacity={floorOpacity.myhal1}
             ref={opacityBox1Ref} 
           />
-          <Floor modelPath="/models/myhal2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} />
+          {/* <Floor modelPath="/models/myhalF2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} /> */}
+          <Floor modelPath="/models/myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
-          <OrbitControls maxDistance={800} minDistance={100} minPolarAngle={0} maxPolarAngle={Math.PI / 3} />
+          <OrbitControls maxDistance={800} minDistance={100} 
+          // minPolarAngle={0} maxPolarAngle={Math.PI / 3} 
+          />
           {/* change to orthographic camera? */}
         </Canvas>
       </div>
