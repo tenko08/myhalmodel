@@ -14,7 +14,7 @@ interface PingLocationRef extends Mesh {
   animateToPosition: (targetPosition: Vector3, duration: number, onComplete?: () => void) => void;
 }
 
-const PingLocation = forwardRef<PingLocationRef, PingLocationProps>(({
+const LocationPing = forwardRef<PingLocationRef, PingLocationProps>(({
   position = [0, 0, 0],
   radius = 100,
   opacity = 1,
@@ -62,6 +62,6 @@ const PingLocation = forwardRef<PingLocationRef, PingLocationProps>(({
   );
 });
 
-PingLocation.displayName = 'PingLocation';
+LocationPing.displayName = 'LocationPing';
 
-export default PingLocation;
+export default LocationPing;

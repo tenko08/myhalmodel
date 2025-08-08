@@ -33,7 +33,7 @@ export const opacityBoxConfigs = {
   }
 };
 
-export const pingLocationConfigs = {
+export const locationPingConfigs = {
   size: [500, 100, 500] as [number, number, number],
   defaultPosition: new THREE.Vector3(0, 0, 0),
   myhal1: {

@@ -14,9 +14,9 @@ import {
   floorMovementAnimationDuration,
   type FloorPositions,
   opacityBoxConfigs,
-  pingLocationConfigs
+  locationPingConfigs
 } from "./config";
-import PingLocation from "./myhal-objects/PingLocation";
+import LocationPing from "./myhal-objects/LocationPing";
 
 interface Opacity {
   myhal1: number;
@@ -143,9 +143,9 @@ export default function Myhal() {
             opacity={floorOpacity.myhal1}
             ref={opacityBox1Ref} 
           />
-          <PingLocation position={pingLocationConfigs.defaultPosition.toArray()} />
+          <LocationPing position={locationPingConfigs.defaultPosition.toArray()} />
           {/* <Floor modelPath="/models/myhalF2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} /> */}
-          <Floor modelPath="/models/myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} />
+          {/* <Floor modelPath="/models/myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} /> */}
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} 
           // minPolarAngle={0} maxPolarAngle={Math.PI / 3} 
