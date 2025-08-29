@@ -1,7 +1,8 @@
-import { Mesh, Material, AnimationMixer, NumberKeyframeTrack, AnimationClip, LoopRepeat, AnimationAction } from 'three';
+import { Mesh, Material } from 'three';
 import { useRef, useEffect, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ThreeElements } from '@react-three/fiber';
+import * as THREE from 'three';
 
 type LocationPingProps = {
   radius?: number;
@@ -30,37 +31,40 @@ const LocationPing = forwardRef<LocationPingRef, LocationPingProps>(({
   ...meshProps
 }, ref) => {
   const meshRef = useRef<Mesh>(null);
-  const currentOpacityRef = useRef(opacity);
-  const currentRadiusRef = useRef(radius);
-  const mixer = useRef<AnimationMixer | null>(null);
-  const pulseActionRef = useRef<AnimationAction | null>(null);
   const materialRef = useRef<Material | null>(null);
   const isAnimatingRef = useRef(false);
+  const animationStartTimeRef = useRef(0);
+  const currentScaleRef = useRef(1);
+  const currentOpacityRef = useRef(opacity);
 
-  // opacity animation
-  useFrame(() => {
-    if (!meshRef.current) return;
-    
-    // Only animate opacity if we're not in the pulse animation
-    if (!isAnimatingRef.current) {
+  // Simple animation using useFrame
+  useFrame((state) => {
+    if (!meshRef.current || !materialRef.current) return;
+
+    if (isAnimatingRef.current) {
+      const elapsed = state.clock.elapsedTime * 1000; // Convert to milliseconds
+      const cycleTime = pulseDuration;
+      const cycleProgress = (elapsed % cycleTime) / cycleTime;
+      
+      // Create a smooth pulse effect
+      const scale = 1 + pulseRange * Math.sin(cycleProgress * Math.PI * 2);
+      const opacity = 0.3 + 0.4 * Math.sin(cycleProgress * Math.PI * 2);
+      
+      meshRef.current.scale.set(scale * radius, scale * radius, scale * radius);
+      (materialRef.current as any).opacity = opacity;
+      currentScaleRef.current = scale;
+      currentOpacityRef.current = opacity;
+    } else {
+      // Smooth transition to target opacity when not animating
       const diff = opacity - currentOpacityRef.current;
       if (Math.abs(diff) > 0.001) {
         const newOpacity = currentOpacityRef.current + diff * animationSpeed;
         currentOpacityRef.current = newOpacity;
-        
-        if (materialRef.current) {
-          (materialRef.current as any).opacity = newOpacity;
-        }
+        (materialRef.current as any).opacity = newOpacity;
       }
-    }
-
-    // update animation mixer
-    if (mixer.current) {
-      mixer.current.update(0.016); // approximate for 60fps
     }
   });
 
-  // pulse animation
   useEffect(() => {
     if (!meshRef.current) return;
 
@@ -75,55 +79,15 @@ const LocationPing = forwardRef<LocationPingRef, LocationPingProps>(({
       }
     }
 
-    mixer.current = new AnimationMixer(meshRef.current);
-
-    const times = [0, 0.5, 1];
-    const scaleValues = [1, 1 + pulseRange, 1];
-    const opacityValues = [0.7, 0.2, 0.7];
-
-    const xScaleTrack = new NumberKeyframeTrack(
-      '.scale[x]',
-      times,
-      scaleValues
-    );
-
-    const yScaleTrack = new NumberKeyframeTrack(
-      '.scale[y]',
-      times,
-      scaleValues
-    );
-
-    const zScaleTrack = new NumberKeyframeTrack(
-      '.scale[z]',
-      times,
-      scaleValues
-    );
-
-    const opacityTrack = new NumberKeyframeTrack(
-      '.material.opacity',
-      times,
-      opacityValues
-    );
-
-    const clip = new AnimationClip('pulse', pulseDuration / 1000, [xScaleTrack, yScaleTrack, zScaleTrack, opacityTrack]);
-    const action = mixer.current.clipAction(clip, meshRef.current);
-    action.setLoop(LoopRepeat, Infinity);
-    pulseActionRef.current = action;
-
     if (ref) {
       const mesh = meshRef.current as LocationPingRef;
       mesh.startPulsing = () => {
         console.log('Starting pulse animation');
-        if (pulseActionRef.current) {
-          isAnimatingRef.current = true;
-          pulseActionRef.current.reset().play();
-        }
+        isAnimatingRef.current = true;
+        animationStartTimeRef.current = Date.now();
       };
       mesh.stopPulsing = () => {
         console.log('Stopping pulse animation');
-        if (pulseActionRef.current) {
-          pulseActionRef.current.stop();
-        }
         isAnimatingRef.current = false;
         if (meshRef.current) {
           meshRef.current.scale.set(radius, radius, radius);
@@ -132,6 +96,7 @@ const LocationPing = forwardRef<LocationPingRef, LocationPingProps>(({
           (materialRef.current as any).opacity = 0;
         }
         currentOpacityRef.current = 0;
+        currentScaleRef.current = 1;
       };
       
       if (typeof ref === 'function') {
@@ -140,15 +105,6 @@ const LocationPing = forwardRef<LocationPingRef, LocationPingProps>(({
         ref.current = mesh;
       }
     }
-
-    return () => {
-      if (pulseActionRef.current) {
-        pulseActionRef.current.stop();
-      }
-      if (mixer.current) {
-        mixer.current.stopAllAction();
-      }
-    };
   }, [ref, pulseRange, pulseDuration, radius, opacity]);
 
   return (
@@ -158,16 +114,15 @@ const LocationPing = forwardRef<LocationPingRef, LocationPingProps>(({
       scale={[radius, radius, radius]}
       {...meshProps}
     >
-      <sphereGeometry args={[1, 16, 16]} />
-      <meshStandardMaterial 
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshBasicMaterial 
         ref={materialRef}
         color={color}
         transparent={true}
         opacity={opacity}
-        toneMapped={false}
-        emissive={color}
-        emissiveIntensity={0.2}
         side={2}
+        depthTest={true}
+        depthWrite={false}
       />
     </mesh>
   );

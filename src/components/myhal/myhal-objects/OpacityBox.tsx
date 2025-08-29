@@ -125,6 +125,8 @@ const OpacityBox = forwardRef<OpacityBoxRef, OpacityBoxProps>(({
         transparent={true}
         opacity={currentOpacityRef.current}
         toneMapped={false}
+        depthTest={true}
+        depthWrite={false}
       />
     </mesh>
   );
