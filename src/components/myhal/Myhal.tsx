@@ -102,6 +102,14 @@ export default function Myhal() {
     setFloor1Opacity(0);
   };
 
+  const locationPingTest = () => {
+    locationPingRef.current?.startPulsing();
+  };
+
+  const locationPingStop = () => {
+    locationPingRef.current?.stopPulsing();
+  };
+
   return (
     <div className="w-full h-full">
       <div className="flex justify-center items-center">
@@ -116,6 +124,12 @@ export default function Myhal() {
         </h1>
         <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={movementUntest}>
           Movement Untest
+        </h1>
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={locationPingTest}>
+          Location Ping Test
+        </h1>
+        <h1 className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors" onClick={locationPingStop}>
+          Stop Location Ping
         </h1>
       </div>
       <div
@@ -135,7 +149,10 @@ export default function Myhal() {
         <Canvas
           shadows
           style={{ width: "100vw", height: "100vh", background: "#fff", pointerEvents: "auto" }}
-          camera={{ position: defaultCameraPosition }}
+          camera={{ 
+            position: defaultCameraPosition,
+            fov: 50
+          }}
           onCreated={({ camera }) => {
             cameraRef.current = camera;
           }}
