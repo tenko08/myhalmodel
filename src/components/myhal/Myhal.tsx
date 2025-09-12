@@ -159,7 +159,7 @@ export default function Myhal() {
         >
           <ambientLight intensity={2} />
           <LightBulb position={[400, 180, 350]} />
-          <Floor modelPath="/models/Floor1Myhal.glb" ref={myhal1Ref} position={defaultFloorPositions.myhal1} />
+          <Floor modelPath="/models/Floor1.glb" ref={myhal1Ref} position={defaultFloorPositions.myhal1} />
           <OpacityBox 
             position={opacityBoxConfigs.myhal1.defaultPosition.toArray()} 
             size={opacityBoxConfigs.myhal1.size} 
@@ -167,7 +167,7 @@ export default function Myhal() {
             ref={opacityBox1Ref} 
           />
           <LocationPing position={locationPingConfigs.defaultPosition.toArray()} ref={locationPingRef} />
-          <Floor modelPath="/models/Floor2Myhal.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} />
+          <Floor modelPath="/models/Floor2.glb" ref={myhal2Ref} position={defaultFloorPositions.myhal2} />
           <Floor modelPath="/models/Myhal150.glb" ref={myhal150Ref} position={defaultFloorPositions.myhal150} />
           {/* temporarily using myhal1.glb for both floors 1 and 2 (the myhal1 and myhal2 files are identical) */}
           <OrbitControls maxDistance={800} minDistance={100} 
