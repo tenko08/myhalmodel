@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/model-viewer": "^4.1.0",
     "@react-three/drei": "^10.4.2",
     "@react-three/fiber": "^9.1.4",
     "@types/three": "^0.178.0",
