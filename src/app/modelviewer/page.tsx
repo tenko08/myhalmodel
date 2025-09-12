@@ -1,9 +1,9 @@
 'use client';
 import ModelViewer from "@/components/modelviewer/ModelViewer";
 
-export default function Home() {
+export default function ModelViewerPage() {
   return (
-    <div>
+    <div className="w-full h-screen">
       <ModelViewer />
     </div>
   );
