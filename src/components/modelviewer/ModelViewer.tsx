@@ -79,7 +79,6 @@ export default function ModelViewer() {
     if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
       modelViewerRef.current.appendAnimation(animationName, {repetitions: 1});
       setAnimation1Playing(true)
-      console.log('Animation played')
     }
   }
 
@@ -90,13 +89,9 @@ export default function ModelViewer() {
         <button 
           disabled={!modelReady}
           onClick={() => {
-            console.log('Button clicked, modelViewerRef.current:', modelViewerRef.current);
             if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
                 playAnimation('Test1')
                 setAnimation1Playing(true)
-                console.log('Animation played')
-            } else {
-              console.log('Model not ready');
             }
           }}
         >
@@ -106,17 +101,13 @@ export default function ModelViewer() {
           disabled={!modelReady}
           className="ml-4"
           onClick={() => {
-            console.log('Button clicked, modelViewerRef.current:', modelViewerRef.current);
             if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
               if (!animation2Playing) {
                 playAnimation('Test2')
                 setAnimation2Playing(true)
-                console.log('Animation played')
               } else {
                 playAnimation('Test2')
               }
-            } else {
-              console.log('Model not ready');
             }
           }}
         >
