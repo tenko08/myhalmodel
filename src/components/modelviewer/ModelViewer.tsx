@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, createElement, useState, useEffect } from 'react'
+import { ModelViewerStyles } from './styles'
 
 interface ModelViewerElement extends HTMLElement {
   src?: string
@@ -129,7 +130,7 @@ export default function ModelViewer() {
       <div className="w-full h-screen">
         {createElement('model-viewer', {
           ref: modelViewerRef,
-          src: '/models/myhalanim.glb',
+          src: '/models/LoadInAnimation.glb',
           alt: 'Floor 1 Model',
           disablePan: true,
           autoRotate: true,
@@ -159,6 +160,9 @@ export default function ModelViewer() {
                 color: '#666'
               }
             }, 'Loading 3D Model...')
+          ),
+          createElement('button', { style: ModelViewerStyles.hotspot, slot: 'hotspot-1', 'data-surface': '15 0 155 298 882 0.167 0.007 0.826', 'data-visibility-attribute': 'visible' },
+            createElement('div', { style: ModelViewerStyles.annotation }, 'label1')
           )
         )}
       </div>
