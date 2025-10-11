@@ -13,7 +13,13 @@ interface ModelViewerElement extends HTMLElement {
   shadowSoftness?: string
   environmentImage?: string
   exposure?: string
-  appendAnimation?: (animationName: string, options?: { repetitions?: number }) => void
+  duration?: number
+  appendAnimation?: (animationName: string, options?: { repetitions?: number, pingpong?: boolean }) => void
+  detachAnimation?: (animationName: string) => void
+  play?: () => void
+  pause?: () => void
+  paused?: boolean
+  appendedAnimations?: string[]
 }
 
 export default function ModelViewer() {
@@ -77,8 +83,20 @@ export default function ModelViewer() {
 
   const playAnimation = (animationName: string) => {
     if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
-      modelViewerRef.current.appendAnimation(animationName, {repetitions: 1});
-      setAnimation1Playing(true)
+      if (modelViewerRef.current.paused && modelViewerRef.current.appendedAnimations && modelViewerRef.current.appendedAnimations.length > 0) {
+        modelViewerRef.current.play?.(); // come back
+      } else {
+        if (modelViewerRef.current.appendedAnimations && modelViewerRef.current.appendedAnimations.length > 0) {
+          modelViewerRef.current.appendedAnimations.forEach(animation => {
+            modelViewerRef.current?.detachAnimation?.(animation);
+          });
+        }
+        modelViewerRef.current.appendAnimation(animationName, {repetitions: 2, pingpong: true});
+        // go away
+        // setTimeout(() => {
+        //   modelViewerRef.current?.pause?.();
+        // }, 500);
+      }
     }
   }
 
@@ -90,8 +108,7 @@ export default function ModelViewer() {
           disabled={!modelReady}
           onClick={() => {
             if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
-                playAnimation('Test1')
-                setAnimation1Playing(true)
+              playAnimation('loadin')
             }
           }}
         >
@@ -102,12 +119,7 @@ export default function ModelViewer() {
           className="ml-4"
           onClick={() => {
             if (modelViewerRef.current && modelViewerRef.current.appendAnimation) {
-              if (!animation2Playing) {
-                playAnimation('Test2')
-                setAnimation2Playing(true)
-              } else {
-                playAnimation('Test2')
-              }
+              playAnimation('Test2')
             }
           }}
         >
@@ -117,17 +129,19 @@ export default function ModelViewer() {
       <div className="w-full h-screen">
         {createElement('model-viewer', {
           ref: modelViewerRef,
-          src: '/models/testanim.glb',
+          src: '/models/myhalanim.glb',
           alt: 'Floor 1 Model',
           disablePan: true,
           autoRotate: true,
           cameraControls: true,
           ar: false,
           arModes: 'webxr scene-viewer',
-          shadowIntensity: '1',
-          shadowSoftness: '0.5',
+          shadowIntensity: 1,
+          shadowSoftness: 0.5,
           environmentImage: 'neutral',
-          exposure: '1',
+          animationName: '',
+          exposure: 0.5,
+          timeScale: 1.3,
           style: {
             width: '100%',
             height: '100%',
